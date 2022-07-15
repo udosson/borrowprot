@@ -148,7 +148,8 @@ class DeploymentHelper {
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-    testerContracts.sortedTroves = await SortedTroves.new()
+    // testerContracts.sortedTroves = await SortedTroves.new()
+    testerContracts.sortedTroves = await upgrades.deployProxy(SortedTroves, { kind: "uups", initializer: "initialize" })
     // Actual tester contracts
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()
