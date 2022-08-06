@@ -1484,9 +1484,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
     function _updateLastFeeOpTime(address _asset) internal {
-        uint256 timePassed = block.timestamp.sub(lastFeeOperationTime[_asset]);
+        // uint256 timePassed = block.timestamp.sub(lastFeeOperationTime[_asset]);
 
-        if (timePassed >= SECONDS_IN_ONE_MINUTE) {
+        if ( block.timestamp.sub(lastFeeOperationTime[_asset]) >= SECONDS_IN_ONE_MINUTE) {
             lastFeeOperationTime[_asset] = block.timestamp;
             emit LastFeeOpTimeUpdated(_asset ,block.timestamp);
         }
@@ -1530,8 +1530,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     }
 
     function _requireAfterBootstrapPeriod() internal view {
-        uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
-        require(block.timestamp >= systemDeploymentTime.add(kumoParams.BOOTSTRAP_PERIOD()), "TroveManager: Redemptions are not allowed during bootstrap phase");
+        // uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
+        require(block.timestamp >= kumoToken.getDeploymentStartTime().add(kumoParams.BOOTSTRAP_PERIOD()), "TroveManager: Redemptions are not allowed during bootstrap phase");
     }
 
     function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage) internal view {
@@ -1570,29 +1570,26 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     function increaseTroveColl(address _asset, address _borrower, uint256 _collIncrease) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newColl = Troves[_borrower][_asset].coll.add(_collIncrease);
-		Troves[_borrower][_asset].coll = newColl;
-		return newColl;
+		Troves[_borrower][_asset].coll = Troves[_borrower][_asset].coll.add(_collIncrease);
+		return Troves[_borrower][_asset].coll;
     }
 
     function decreaseTroveColl(address _asset, address _borrower, uint256 _collDecrease) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newColl = Troves[_borrower][_asset].coll.sub(_collDecrease);
-		Troves[_borrower][_asset].coll = newColl;
-		return newColl;
+		Troves[_borrower][_asset].coll =  Troves[_borrower][_asset].coll.sub(_collDecrease);
+		return Troves[_borrower][_asset].coll;
     }
 
     function increaseTroveDebt(address _asset, address _borrower, uint256 _debtIncrease) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newDebt = Troves[_borrower][_asset].debt.add(_debtIncrease);
-		Troves[_borrower][_asset].debt = newDebt;
-		return newDebt;
+
+        Troves[_borrower][_asset].debt = Troves[_borrower][_asset].debt.add(_debtIncrease);
+		return Troves[_borrower][_asset].debt;
     }
 
     function decreaseTroveDebt(address _asset, address _borrower, uint256 _debtDecrease) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newDebt = Troves[_borrower][_asset].debt.sub(_debtDecrease);
-		Troves[_borrower][_asset].debt = newDebt;
-		return newDebt;
+        Troves[_borrower][_asset].debt = Troves[_borrower][_asset].debt.sub(_debtDecrease);
+		return Troves[_borrower][_asset].debt;
     }
 }

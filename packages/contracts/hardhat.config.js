@@ -3,6 +3,7 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("solidity-coverage");
 require("hardhat-gas-reporter");
+require('hardhat-contract-sizer');
 
 const accounts = require("./hardhatAccountsList2k.js");
 const accountsList = accounts.accountsList
@@ -78,7 +79,7 @@ module.exports = {
             settings: {
             optimizer: {
                 enabled: true,
-                runs: 200
+                runs: 100
           }
         }
     }
